@@ -2,11 +2,10 @@
 # train.csv and test.csv have a stratified split of 10% for testing and the remaining articles for training
 # It is opportune to split another 10% fromm train.csv to get a validation set (or to use N-fold cross-validation)
 
-# - Number of articles per class; bar plot, or pie graph. How much is the dataset imbalanced?
+# - Number of articles per class; bar plot (alternatively one could do a pie graph). How much is the dataset imbalanced?
 # - Average number of words in an article, per class; bar plot.
-#   This visualization and the previous one are already found on the site
-# - Numerical table or color-matrix, expressing the overlap in vocabulary between any 2 classes
-# - Bar plot: how much of the vocabulary of a class is non-overlapping?
+# - Color-matrix, expressing the overlap in vocabulary between any 2 classes
+# - How much of the vocabulary of a class is unique, i.e. non-overlapping? bar plot
 import Filepaths
 import Utils
 import matplotlib.pyplot as plt

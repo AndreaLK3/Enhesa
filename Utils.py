@@ -37,3 +37,8 @@ def save_figure(fig, out_fpath):
     fig.savefig(out_fpath)
 
 
+# Gives the TF-IDF value for a word in a document and text corpus
+def tf_idf(word, document, corpus):
+    
+
+
