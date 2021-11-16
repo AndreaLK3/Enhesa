@@ -14,12 +14,12 @@ class TestVocabulary(unittest.TestCase):
 
 
     def test_get_vocabulary(self):
-        self.my_mini_vocab = set(['Small', ',', 'experimental', 'hydrogen-powered', 'planes', 'are', 'paving', 'the',
-            'way', 'for', 'net-zero', 'carbon', 'aviation', 'by', '2050', '.', 'But', 'route', 'is', 'rocky',
-            'Northern', 'Ireland', '’', 's', '0-0', 'draw', 'with', 'Italy', 'means', 'Azzurri', 'will', 'have', 'to',
-            'rely', 'on', 'play-offs', 'secure', 'a', 'place', 'at', '2022', 'World', 'Cup', 'As', 'we', 'debate',
+        self.my_mini_vocab = set(['small', ',', 'experimental', 'hydrogen-powered', 'planes', 'are', 'paving', 'the',
+            'way', 'for', 'net-zero', 'carbon', 'aviation', 'by', '2050', '.', 'but', 'route', 'is', 'rocky',
+            'northern', 'ireland', '’', 's', '0-0', 'draw', 'with', 'italy', 'means', 'azzurri', 'will', 'have', 'to',
+            'rely', 'on', 'play-offs', 'secure', 'a', 'place', 'at', '2022', 'world', 'cup', 'as', 'we', 'debate',
             'negative', 'effects', 'of', 'social', 'media', 'consider', 'earliest', 'and', 'arguably', 'most',
-    'prevalent' , 'that', 'use', 'internet', 'connect', 'other', 'people', ':', 'chat', 'der', 'random', 'words', 'UNK']
+    'prevalent' , 'that', 'use', 'internet', 'connect', 'other', 'people', ':', 'chat', 'der', 'random', 'words', 'unk']
 )
 
         self.assertEqual(set(Utils.get_vocabulary(self.corpus_df, self.vocab_fpath, new=True, min_frequency=1)),

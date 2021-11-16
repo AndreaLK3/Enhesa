@@ -15,7 +15,7 @@ vocabulary_fpath = os.path.join(models_folder, vocabulary_fname)
 random_wordEmb_fname = "WordEmbeddings_randomNormal.npy"
 random_wordEmb_fpath = os.path.join(models_folder, random_wordEmb_fname)
 pretrained_wordEmb_fname = "WordEmbeddings_pretrained.npy"
-pretrained_wordEmb_fpath = os.path.join(models_folder, random_wordEmb_fname)
+pretrained_wordEmb_fpath = os.path.join(models_folder, pretrained_wordEmb_fname)
 
 
 tests_folder = "Tests"

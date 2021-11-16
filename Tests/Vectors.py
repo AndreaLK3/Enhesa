@@ -21,12 +21,7 @@ class TestVectors(unittest.TestCase):
     def test_pretrained_wordvectors(self):
 
         word_embeddings = LV.assign_pretrained_embs(self.vocab_words_ls, self.vectors_fpath)
-        unk_index = self.vocab_words_ls.index('UNK')
         der_index = self.vocab_words_ls.index('der')
-        self.assertEqual(word_embeddings[unk_index][0], -0.07903)
-
-        np.save(self.wordembeddings_fpath, word_embeddings)
-        word_embeddings = np.load(self.wordembeddings_fpath)
         self.assertEqual(word_embeddings[der_index][0], -0.011639)
 
 

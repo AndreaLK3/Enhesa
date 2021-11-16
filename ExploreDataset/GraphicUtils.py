@@ -24,7 +24,7 @@ def get_class_vocabularies(training_df, class_names):
     for c_name in class_names:
         class_articles = training_df[training_df[Column.CLASS.value] == c_name][
             Column.ARTICLE.value].to_list()
-        vectorizer = CountVectorizer(lowercase=False)
+        vectorizer = CountVectorizer(lowercase=True)
         vectorizer.fit(class_articles)
         words_in_class = set(vectorizer.vocabulary_.keys())
         classes_words_ls.append(words_in_class)

@@ -42,9 +42,9 @@ def assign_pretrained_embs(vocabulary_words_ls, vecs_fpath):
 def compute_word_vectors(pretrained_or_random):
     corpus_df = Utils.load_split(Utils.Split.TRAINING)
 
-    vocabulary = Utils.get_vocabulary(corpus_df, F.vocabulary_fpath, min_frequency=2)
-    vocab_words_ls = list(vocabulary.keys())
+    vocab_words_ls = Utils.get_vocabulary(corpus_df, F.vocabulary_fpath, min_frequency=2, new=True)
     vocab_len = len(vocab_words_ls)
+    print("Vocabulary size |V|=" + str(vocab_len))
 
     if (pretrained_or_random):
         vecs_fpath = os.path.join(Filepaths.vectors_folder, Filepaths.vectors_fname)

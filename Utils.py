@@ -28,26 +28,30 @@ def load_split(split_enum):
     return df
 
 
-
-
-def get_vocabulary(corpus_df, vocab_fpath, new, min_frequency):
+def get_vocabulary(corpus_df, vocab_fpath, min_frequency, new=False, lowercase=True):
 
     if os.path.exists(vocab_fpath) and not new:
         with open(vocab_fpath, "rb") as vocab_file:
             vocabulary_ls = pickle.load(vocab_file)
     else:
+
+        # german_stopwords_ls = nltk.corpus.stopwords.words('german')
+
         articles = corpus_df[Column.ARTICLE.value].to_list()
         vocabulary_counter = Counter()
+
         for article in articles:
             words = nltk.tokenize.word_tokenize(article, language='german')
+            if lowercase:
+                words = [w.lower() for w in words]
             vocabulary_counter.update(words)
+
         vocabulary_ls_0 = list(vocabulary_counter.keys())
         vocabulary_ls = [w for w in vocabulary_ls_0 if vocabulary_counter[w] >= min_frequency]
         with open(vocab_fpath, "wb") as vocab_file:
             pickle.dump(vocabulary_ls, vocab_file)
 
     return vocabulary_ls
-
 
 
 def get_labels(split_df):
