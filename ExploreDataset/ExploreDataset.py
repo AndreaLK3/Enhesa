@@ -103,7 +103,7 @@ def vocabulary_overlap(class_names, vocabularies_ls):
     plt.imshow(overlap_matrix, cmap=Utils.create_gyr_colormap())
     plt.colorbar()
     plt.title("Overlap in vocabulary between classes")
-    Utils.save_figure(fig, os.path.join(Filepaths.images_folder, 'Vocabulary_overlap.png'))
+    Utils.save_figure(fig, os.path.join(Filepaths.images_folder, 'Figures/Vocabulary_overlap.png'))
 
 
 def vocabulary_unique(class_names, vocabularies_ls):
@@ -128,7 +128,7 @@ def vocabulary_unique(class_names, vocabularies_ls):
     # plt.grid(color='lightgray', linestyle='-', linewidth=0.2, zorder=-1)
     plt.bar_label(bar_obj, labels=unique_vocabulary_fraction_ls, zorder=5)
     # plt.legend(["Training set", "Test set"])
-    Utils.save_figure(fig, os.path.join(Filepaths.images_folder, 'Vocabulary_unique.png'))
+    Utils.save_figure(fig, os.path.join(Filepaths.images_folder, 'Figures/Vocabulary_unique.png'))
 
 
 def all_visualizations():
