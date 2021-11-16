@@ -27,25 +27,26 @@ def load_split(split_enum):
         df = pd.read_csv(F.test_file, sep=";", names=[Column.CLASS.value, Column.ARTICLE.value], index_col=False)
     return df
 
-# with open('/tmp/demo.pickle', 'wb') as outputfile:
-# ...     pickle.dump(counts, outputfile)
-# ...
-# >>> del counts
-# >>> with open('/tmp/demo.pickle', 'rb') as inputfile:
-# ...     print(pickle.load(inputfile))
 
-def get_vocabulary(corpus_df, vocab_fpath):
-    if os.path.exists(vocab_fpath):
-        vocabulary_counter = pickle.load(F.vocabulary_fpath)
+
+
+def get_vocabulary(corpus_df, vocab_fpath, new, min_frequency):
+
+    if os.path.exists(vocab_fpath) and not new:
+        with open(vocab_fpath, "rb") as vocab_file:
+            vocabulary_ls = pickle.load(vocab_file)
     else:
         articles = corpus_df[Column.ARTICLE.value].to_list()
         vocabulary_counter = Counter()
         for article in articles:
             words = nltk.tokenize.word_tokenize(article, language='german')
             vocabulary_counter.update(words)
-        pickle.dump(vocabulary_counter, vocab_fpath)
+        vocabulary_ls_0 = list(vocabulary_counter.keys())
+        vocabulary_ls = [w for w in vocabulary_ls_0 if vocabulary_counter[w] >= min_frequency]
+        with open(vocab_fpath, "wb") as vocab_file:
+            pickle.dump(vocabulary_ls, vocab_file)
 
-    return vocabulary_counter
+    return vocabulary_ls
 
 
 

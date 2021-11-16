@@ -10,7 +10,7 @@ vectors_folder = "Word2Vec_vectors"
 vectors_fname = "German_Word2Vec_vectors.txt"
 
 models_folder = "Models"
-vocabulary_fname = "vocabularyCounter.pickle"
+vocabulary_fname = "vocabularyList.pickle"
 vocabulary_fpath = os.path.join(models_folder, vocabulary_fname)
 random_wordEmb_fname = "WordEmbeddings_randomNormal.npy"
 random_wordEmb_fpath = os.path.join(models_folder, random_wordEmb_fname)
