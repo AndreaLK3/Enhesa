@@ -7,23 +7,9 @@ import Filepaths as F
 import numpy as np
 
 
-def save_pretrained_vecs_wordslist(vecs_fpath, out_fpath):
+def assign_pretrained_embs(vocabulary_words_ls, vecs_fpath):
 
-    with open(vecs_fpath, "r") as vecs_file:
-        with open(out_fpath, "w") as out_file:
-            for line in vecs_file:
-                line_ls = line.split()
-                word_str = line_ls[0]
-
-                word_1 = re.sub(r"^b'", '', word_str)
-                word_2 = re.sub(r"'$", '', word_1)
-                out_file.write(word_2)
-
-
-
-def get_all_pretrained_embs(vocabulary_words_ls, vecs_fpath):
-
-    pretrained_embs_arr = np.random.normal(loc=0.0, scale=0.01, size=(vocab_len, Utils.EMBEDDINGS_DIM))
+    pretrained_embs_arr = np.random.normal(loc=0.0, scale=0.01, size=(len(vocabulary_words_ls), Utils.EMBEDDINGS_DIM))
     # If some words of the vocabulary are not found in the pre-trained Word2Vec vectors,
     # they remain initialized according to N(0,0.01)s
 
@@ -49,25 +35,42 @@ def get_all_pretrained_embs(vocabulary_words_ls, vecs_fpath):
             except ValueError:
                 pass
                 # print(str(word_2) + " not present in corpus vocabulary")
-        print("*")
+
     return pretrained_embs_arr
 
 
-def init_word_vectors(pretrained_or_random):
+def compute_word_vectors(pretrained_or_random):
     corpus_df = Utils.load_split(Utils.Split.TRAINING)
-    corpus_txt_ls = corpus_df[Utils.Column.ARTICLE.value].to_list()
 
-    vocabulary = Utils.get_vocabulary(corpus_df)
+    vocabulary = Utils.get_vocabulary(corpus_df, F.vocabulary_fpath)
     vocab_words_ls = list(vocabulary.keys())
     vocab_len = len(vocab_words_ls)
 
-    if not (pretrained_or_random):
-        word_embeddings = np.random.normal(loc=0.0, scale=0.01, size=(vocab_len, Utils.EMBEDDINGS_DIM))
-    else:  # pretrained
+    if (pretrained_or_random):
         vecs_fpath = os.path.join(Filepaths.vectors_folder, Filepaths.vectors_fname)
-        word_embeddings = get_all_pretrained_embs(vocab_words_ls, vecs_fpath)
+        word_embeddings = assign_pretrained_embs(vocab_words_ls, vecs_fpath)
+        np.save(F.pretrained_wordEmb_fpath, word_embeddings)
+    else:  # random, i.e. N(0, 0.01)
+        word_embeddings = np.random.normal(loc=0.0, scale=0.01, size=(vocab_len, Utils.EMBEDDINGS_DIM))
+        np.save(F.random_wordEmb_fpath, word_embeddings)
 
-    return word_embeddings.shape
+    return word_embeddings
+
+# Entry level function: if the word embeddings were already computed, load them.
+# Otherwise, compute them (i.e. compute random normal vectors, or assign pretrained vectors).
+def get_word_vectors(pretrained_or_random):
+    if pretrained_or_random:
+        if os.path.exists(F.pretrained_wordEmb_fpath):
+            word_embeddings = np.load(F.pretrained_wordEmb_fpath)
+        else:
+            word_embeddings = compute_word_vectors(pretrained_or_random)
+    else:
+        if os.path.exists(F.random_wordEmb_fpath):
+            word_embeddings = np.load(F.random_wordEmb_fpath)
+        else:
+            word_embeddings = compute_word_vectors(pretrained_or_random)
+    return word_embeddings
+
 
 
 

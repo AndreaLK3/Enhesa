@@ -8,11 +8,15 @@ test_file = os.path.join(dataset_folder, "test.csv")
 images_folder = os.path.join("ExploreDataset", "Figures")
 vectors_folder = "Word2Vec_vectors"
 vectors_fname = "German_Word2Vec_vectors.txt"
-vectors_vocab_fname = "German_Word2Vec_vocabulary.txt"
 
 models_folder = "Models"
-vocabulary_fname = "vocabulary.txt"
-vocabulary_file = os.path.join(models_folder, vocabulary_fname)
+vocabulary_fname = "vocabularyCounter.pickle"
+vocabulary_fpath = os.path.join(models_folder, vocabulary_fname)
+random_wordEmb_fname = "WordEmbeddings_randomNormal.npy"
+random_wordEmb_fpath = os.path.join(models_folder, random_wordEmb_fname)
+pretrained_wordEmb_fname = "WordEmbeddings_pretrained.npy"
+pretrained_wordEmb_fpath = os.path.join(models_folder, random_wordEmb_fname)
+
 
 tests_folder = "Tests"
 mytests_file = os.path.join(tests_folder, "MyTest.csv")

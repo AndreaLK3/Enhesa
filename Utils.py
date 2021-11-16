@@ -3,7 +3,8 @@ from enum import Enum
 import Filepaths as F
 import nltk
 from collections import Counter
-from sklearn.feature_extraction.text import CountVectorizer
+import os
+import pickle
 
 class Split(Enum):
     TRAINING = "training"
@@ -26,29 +27,27 @@ def load_split(split_enum):
         df = pd.read_csv(F.test_file, sep=";", names=[Column.CLASS.value, Column.ARTICLE.value], index_col=False)
     return df
 
+# with open('/tmp/demo.pickle', 'wb') as outputfile:
+# ...     pickle.dump(counts, outputfile)
+# ...
+# >>> del counts
+# >>> with open('/tmp/demo.pickle', 'rb') as inputfile:
+# ...     print(pickle.load(inputfile))
 
-# Auxiliary function: use CountVectorizer's tokenization to get the vocabulary (words, no frequencies) of each class
-def get_class_vocabularies(training_df, class_names):
-
-    classes_words_ls = []
-    for c_name in class_names:
-        class_articles = training_df[training_df[Column.CLASS.value] == c_name][
-            Column.ARTICLE.value].to_list()
-        vectorizer = CountVectorizer(lowercase=False)
-        vectorizer.fit(class_articles)
-        words_in_class = set(vectorizer.vocabulary_.keys())
-        classes_words_ls.append(words_in_class)
-    return classes_words_ls
-
-
-def get_vocabulary(corpus_df):
-    articles = corpus_df[Column.ARTICLE.value].to_list()
-    vocabulary_counter = Counter()
-    for article in articles:
-        words = nltk.tokenize.word_tokenize(article, language='german')
-        vocabulary_counter.update(words)
+def get_vocabulary(corpus_df, vocab_fpath):
+    if os.path.exists(vocab_fpath):
+        vocabulary_counter = pickle.load(F.vocabulary_fpath)
+    else:
+        articles = corpus_df[Column.ARTICLE.value].to_list()
+        vocabulary_counter = Counter()
+        for article in articles:
+            words = nltk.tokenize.word_tokenize(article, language='german')
+            vocabulary_counter.update(words)
+        pickle.dump(vocabulary_counter, vocab_fpath)
 
     return vocabulary_counter
+
+
 
 def get_labels(split_df):
     class_names = list(split_df["class"].value_counts().index)

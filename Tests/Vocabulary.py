@@ -3,13 +3,14 @@ import Filepaths as F
 import pandas as pd
 import unittest
 from collections import Counter
+import os
 
 class TestVocabulary(unittest.TestCase):
 
     def setUp(self):
         self.corpus_df = pd.read_csv(F.mytests_file, sep=";",
                                      names=[Utils.Column.CLASS.value, Utils.Column.ARTICLE.value], index_col=False)
-        self.corpus_txt_ls = self.corpus_df[Utils.Column.ARTICLE.value].to_list()
+        self.vocab_fpath = os.path.join(F.tests_folder, F.vocabulary_fname)
 
 
     def test_get_vocabulary(self):
@@ -22,7 +23,7 @@ class TestVocabulary(unittest.TestCase):
             'media': 1, 'consider': 1, 'earliest': 1, 'and': 1, 'arguably': 1, 'most': 1, 'prevalent': 1,
             'that': 1, 'use': 1, 'internet': 1, 'connect': 1, 'other': 1, 'people': 1, ':': 1, 'chat': 1,
             'der':1, 'random':1, 'words':1, 'UNK':1})
-        self.assertEqual(Utils.get_vocabulary(self.corpus_df),
+        self.assertEqual(Utils.get_vocabulary(self.corpus_df, self.vocab_fpath),
                          self.my_mini_vocab)
 
 
