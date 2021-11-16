@@ -53,7 +53,7 @@ def words_in_articles(training_df):
     fig, ax = plt.subplots()
     class_names = list(training_df["class"].value_counts().index)
     avg_words_per_class = []
-    vocabularies_ls = []
+
     for c_name in class_names:
         class_articles = training_df[training_df[Utils.Column.CLASS.value] == c_name][Utils.Column.ARTICLE.value].to_list()
         num_articles_per_class = len(class_articles)
@@ -69,20 +69,9 @@ def words_in_articles(training_df):
     # plt.legend(["Training set", "Test set"])
     Utils.save_figure(fig, os.path.join(Filepaths.images_folder, 'Avg_words_in_class.png'))
 
-    return vocabularies_ls
 
-# Auxiliary function: use CountVectorizer's tokenization to get the vocabulary (words, no frequencies) of each class
-def get_class_vocabularies(training_df, class_names):
 
-    classes_words_ls = []
-    for c_name in class_names:
-        class_articles = training_df[training_df[Utils.Column.CLASS.value] == c_name][
-            Utils.Column.ARTICLE.value].to_list()
-        vectorizer = CountVectorizer(lowercase=False)
-        vectorizer.fit(class_articles)
-        words_in_class = set(vectorizer.vocabulary_.keys())
-        classes_words_ls.append(words_in_class)
-    return classes_words_ls
+
 
 # Visualization 3: The vocabularies of a class may overlap with that of another class. To which extent?
 # We expect that the greater the overlap, the more difficult it will be to distinguish between classes
@@ -149,7 +138,7 @@ def all_visualizations():
 
     words_in_articles(training_df)  # maybe sorting is better?
 
-    vocabularies_ls = get_class_vocabularies(training_df, class_names)
+    vocabularies_ls = Utils.get_class_vocabularies(training_df, class_names)
     vocabulary_overlap(class_names, vocabularies_ls)
 
     vocabulary_unique(class_names, vocabularies_ls)  # that grid... and maybe sorted, too
