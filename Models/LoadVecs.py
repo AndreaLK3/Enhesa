@@ -14,27 +14,30 @@ def assign_pretrained_embs(vocabulary_words_ls, vecs_fpath):
     # they remain initialized according to N(0,0.01)s
 
     with open(vecs_fpath, "r") as vecs_file:
-        for line in vecs_file:
+        for line_num, line in enumerate(vecs_file):
             line_ls = line.split()
             word_str = line_ls[0]
 
             word_1 = re.sub(r"^b'", '', word_str)
             word_2 = re.sub(r"'$", '', word_1)
-
-            vector_str = line_ls[1:]
-            vector_ls = []
-            for num_str in vector_str:
-                if num_str.startswith("'"):
-                    num_str = num_str[1:-1]
-                num = float(num_str)
-                vector_ls.append(num)
-            vector_arr = np.array(vector_ls)
             try:
                 word_idx = vocabulary_words_ls.index(word_2)
+
+                vector_str = line_ls[1:]
+                vector_ls = []
+                for num_str in vector_str:
+                    if num_str.startswith("'"):
+                        num_str = num_str[1:-1]
+                    num = float(num_str)
+                    vector_ls.append(num)
+                vector_arr = np.array(vector_ls)
                 pretrained_embs_arr[word_idx] = vector_arr
             except ValueError:
                 pass
                 # print(str(word_2) + " not present in corpus vocabulary")
+
+            if (line_num) % 10000 == 0:
+                print("Reading line n."+str(line_num) + " of pretrained vectors file...")
 
     return pretrained_embs_arr
 
@@ -42,7 +45,7 @@ def assign_pretrained_embs(vocabulary_words_ls, vecs_fpath):
 def compute_word_vectors(pretrained_or_random):
     corpus_df = Utils.load_split(Utils.Split.TRAINING)
 
-    vocab_words_ls = Utils.get_vocabulary(corpus_df, F.vocabulary_fpath, min_frequency=2, new=True)
+    vocab_words_ls = Utils.get_vocabulary(corpus_df, F.vocabulary_fpath, min_frequency=2, new=False)
     vocab_len = len(vocab_words_ls)
     print("Vocabulary size |V|=" + str(vocab_len))
 

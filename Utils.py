@@ -16,6 +16,7 @@ class Column(Enum):
     ARTICLE = "article"
 
 EMBEDDINGS_DIM=300
+UNK_TOKEN = 'unk'
 
 # Load train.csv and/or test.csv as Pandas dataframes
 def load_split(split_enum):
@@ -48,6 +49,8 @@ def get_vocabulary(corpus_df, vocab_fpath, min_frequency, new=False, lowercase=T
 
         vocabulary_ls_0 = list(vocabulary_counter.keys())
         vocabulary_ls = [w for w in vocabulary_ls_0 if vocabulary_counter[w] >= min_frequency]
+        if UNK_TOKEN not in vocabulary_ls:
+            vocabulary_ls.append(UNK_TOKEN)
         with open(vocab_fpath, "wb") as vocab_file:
             pickle.dump(vocabulary_ls, vocab_file)
 
