@@ -43,7 +43,7 @@ def assign_pretrained_embs(vocabulary_words_ls, vecs_fpath):
 
 
 def compute_word_vectors(pretrained_or_random):
-    corpus_df = Utils.load_split(Utils.Split.TRAINING)
+    corpus_df = Utils.load_split(Utils.Split.TRAIN)
 
     vocab_words_ls = Utils.get_vocabulary(corpus_df, F.vocabulary_fpath, min_frequency=2, new=False)
     vocab_len = len(vocab_words_ls)

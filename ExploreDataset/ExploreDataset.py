@@ -19,7 +19,7 @@ import ExploreDataset.GraphicUtils as GraphicUtils
 # Step 0: load the training dataset from train.csv. Columns: "class", "article" (specified in Utils.Column)
 #         Get the name and the number of articles for each class.
 def initialize():
-    training_df = Utils.load_split(Utils.Split.TRAINING)
+    training_df = Utils.load_split(Utils.Split.TRAIN)
     class_frequencies_training = list(training_df["class"].value_counts())
     class_names = list(training_df["class"].value_counts().index)
 

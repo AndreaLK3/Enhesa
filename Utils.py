@@ -5,9 +5,11 @@ import nltk
 from collections import Counter
 import os
 import pickle
+import logging
+import sys
 
 class Split(Enum):
-    TRAINING = "training"
+    TRAIN = "train"  # refers to the original train.csv file in the 10kGNAD dataset
     VALIDATION = "validation"
     TEST = "test"
 
@@ -18,9 +20,11 @@ class Column(Enum):
 EMBEDDINGS_DIM=300
 UNK_TOKEN = 'unk'
 
+
+
 # Load train.csv and/or test.csv as Pandas dataframes
 def load_split(split_enum):
-    if split_enum == Split.TRAINING:
+    if split_enum == Split.TRAIN:
         df = pd.read_csv(F.training_file, sep=";", names=[Column.CLASS.value, Column.ARTICLE.value])
     elif split_enum == Split.VALIDATION:
         df = None
@@ -76,3 +80,17 @@ def info_max_words_in_article(corpus_df):
         if num_words > max_words:
             max_words = num_words
     return max_words
+
+
+
+# Invoked to write a message to a text logfile and also print it
+def init_logging(logfilename, loglevel=logging.INFO):
+  for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+  logging.basicConfig(level=loglevel, filename=logfilename, filemode="w",
+                      format='%(levelname)s : %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
+  if len(logging.getLogger().handlers) < 2:
+      outlog_h = logging.StreamHandler(sys.stdout)
+      outlog_h.setLevel(loglevel)
+      logging.getLogger().addHandler(outlog_h)

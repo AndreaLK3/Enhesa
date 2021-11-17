@@ -14,7 +14,7 @@ def get_article_indices(article_tokens, vocabulary_ls):
         indices_ls.append(idx)
     return indices_ls
 
-
+# Iterator that gives an article's vocabulary indices and class label
 def next_featuresandlabel_article(corpus_df):
 
     vocabulary_ls = Utils.get_vocabulary(corpus_df, F.vocabulary_fpath, min_frequency=2, new=False)
@@ -33,5 +33,6 @@ def next_featuresandlabel_article(corpus_df):
         yield (article_indices, article_labels[i])
 
 
-
+def organize_training_corpus(corpus_df):
+    pass
 
