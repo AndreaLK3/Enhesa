@@ -39,20 +39,19 @@ def run_train():
     model.to(DEVICE)
     model.train()
 
-    # More initialization: samples' iterator, object to hold the evaluation measures, optimizer
-    training_iterator = CorpusReader.next_featuresandlabel_article(training_df)
+    # More initialization: object to hold the evaluation measures, optimizer
     measures_obj = EV.EvaluationMeasures()
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
+    optimizer = torch.optim.Adam(model.parameters(), lr=5e-5)
 
     # Training loop
     best_validation_loss = inf # for early-stopping
-    max_epochs = 20
+    max_epochs = 100
     current_epoch = 1
     num_training_samples = training_df.index.stop
-    sample_num = 0
 
     while current_epoch < max_epochs:
-
+        training_iterator = CorpusReader.next_featuresandlabel_article(training_df) #  the samples' iterator
+        sample_num = 0
         for article_indices, article_label in training_iterator:
             # starting operations on one batch
             optimizer.zero_grad()
@@ -60,8 +59,8 @@ def run_train():
 
             x_indices_t = torch.tensor(article_indices).to(DEVICE)
             y_t = torch.tensor(article_label).to(DEVICE)
-            label_probabilities = model(x_indices_t, y_t)
-            predicted_label = torch.argmax(label_probabilities)
+            label_probabilities = model(x_indices_t)
+            y_predicted = torch.argmax(label_probabilities)
 
             # loss and step
             loss = tfunc.nll_loss(label_probabilities, y_t.unsqueeze(0))
@@ -69,9 +68,9 @@ def run_train():
             optimizer.step()
 
             # stats
-            measures_obj.append_label(predicted_label)
+            measures_obj.append_label(y_predicted.item())
             measures_obj.append_correct_label(article_label)
-            measures_obj.append_loss(loss)
+            measures_obj.append_loss(loss.item())
 
             if sample_num % (num_training_samples // 10) == 0:
                 logging.info("Training sample: \t " + str(sample_num) + "/ " + str(num_training_samples) + " ...")
@@ -79,13 +78,14 @@ def run_train():
         # end of epoch: print stats, and reset them
         EV.log_accuracy_measures(measures_obj)
         measures_obj.reset_counters()
+        current_epoch = current_epoch + 1
 
         # examine the validation set
-        validation_loss = evaluation(validation_df, model)
-        if validation_loss <= best_validation_loss:
-            best_validation_loss = validation_loss
-        else:
-            break  # early stop
+        #validation_loss = evaluation(validation_df, model)
+        #if validation_loss <= best_validation_loss:
+        #    best_validation_loss = validation_loss
+        #else:
+        #    break  # early stop
 
 
 # Inference only. Used for the validation set, and possibly any test set
@@ -105,9 +105,9 @@ def evaluation(corpus_df, model):
         loss = tfunc.nll_loss(label_probabilities, y_t.unsqueeze(0))
 
         # stats
-        validation_measures_obj.append_label(predicted_label)
+        validation_measures_obj.append_label(predicted_label.item())
         validation_measures_obj.append_correct_label(article_label)
-        validation_measures_obj.append_loss(loss)
+        validation_measures_obj.append_loss(loss.item())
 
     # end of epoch: print stats
     EV.log_accuracy_measures(validation_measures_obj)

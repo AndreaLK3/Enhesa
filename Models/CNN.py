@@ -9,20 +9,17 @@ class ConvNet(torch.nn.Module):
 
         self.E = Parameter(torch.FloatTensor(embeddings_matrix), requires_grad=True)
         dim_embs = self.E.shape[1]
-        self.select_first_indices = Parameter(torch.tensor(list(range(1024))).to(torch.float32),
-                                               requires_grad=False)  # can be used for select_index
-        self.conv1d_k3 = torch.nn.Conv1d(in_channels=300, out_channels=100, kernel_size=3, padding=2)
-        self.conv1d_k5 = torch.nn.Conv1d(in_channels=300, out_channels=100, kernel_size=5, padding=4)
-        self.conv1d_k8 = torch.nn.Conv1d(in_channels=300, out_channels=100, kernel_size=8, padding=7)
+        dim_conv_out = 100
+        self.conv1d_k3 = torch.nn.Conv1d(in_channels=dim_embs, out_channels=dim_conv_out, kernel_size=3, padding=2)
+        self.conv1d_k5 = torch.nn.Conv1d(in_channels=dim_embs, out_channels=dim_conv_out, kernel_size=5, padding=4)
+        self.conv1d_k8 = torch.nn.Conv1d(in_channels=dim_embs, out_channels=dim_conv_out, kernel_size=8, padding=7)
        # The global maxpooling operation is handled via torch.nn.functional
 
-        self.linear2classes = torch.nn.Linear(300, num_classes)
+        self.linear2classes = torch.nn.Linear(dim_conv_out*3, num_classes)
 
 
-    def forward(self, indices_input_tensor, label):
-        CURRENT_DEVICE = 'cpu' if not (torch.cuda.is_available()) else 'cuda:' + str(torch.cuda.current_device())
-        # T-BPTT: at the start of each batch, we detach_() the hidden state from the graph&history that created it
-        # self.memory_hn.detach_()
+    def forward(self, indices_input_tensor):
+        # CURRENT_DEVICE = 'cpu' if not (torch.cuda.is_available()) else 'cuda:' + str(torch.cuda.current_device())
 
         x_t = self.E[indices_input_tensor].t().unsqueeze(0)
         # e.g. if the article contains 68 words, x_t.shape=(batch_size=1, embeddings_dim=300, sequence_length=68)

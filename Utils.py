@@ -94,3 +94,8 @@ def init_logging(logfilename, loglevel=logging.INFO):
       outlog_h = logging.StreamHandler(sys.stdout)
       outlog_h.setLevel(loglevel)
       logging.getLogger().addHandler(outlog_h)
+
+
+def round_list_elems(ls, precision=2):
+    rounded_ls = [round(elem, precision) for elem in ls]
+    return rounded_ls

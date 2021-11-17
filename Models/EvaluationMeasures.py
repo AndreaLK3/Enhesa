@@ -1,6 +1,9 @@
 import logging
-
+import torch
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score, confusion_matrix
+
+import Utils
+
 
 class EvaluationMeasures :
     # ---------- Initialization ---------- #
@@ -28,6 +31,11 @@ class EvaluationMeasures :
         self.total_loss = self.total_loss + loss
         self.number_of_steps = self.number_of_steps + 1
 
+    # ---------- Move tensors from CUDA to cpu to compute the scores ---------- #
+    def move_tensors_to_cpu_np(self):
+        pass
+
+
     # ---------- Evaluation measures ---------- #
     def compute_accuracy(self):
         return accuracy_score(y_true=self.correct_labels, y_pred=self.predicted_labels)
@@ -54,11 +62,11 @@ def log_accuracy_measures(measures_obj):
     precision = measures_obj.compute_precision()
     recall = measures_obj.compute_recall()
     f1_score = measures_obj.compute_f1score()
-    confusion_matrix = measures_obj.compute_confusion_matrix()
 
     loss = measures_obj.compute_loss()
+    confusion_matrix = measures_obj.compute_confusion_matrix()
 
-    logging.info("Loss=" + str(round(loss,2))+ " ; accuracy=" + str(accuracy))
-    logging.info("precision=" + str(precision) + " ; recall=" + str(recall))
-    logging.info("F1_score=" + str(f1_score))
-    logging.info("confusion_matrix=" + str(confusion_matrix))
+    logging.info("Loss=" + str(round(loss,2))+ " ; accuracy=" + str(round(accuracy,3)))
+    logging.info("precision=" + str(Utils.round_list_elems(precision)) + "\nRecall=" + str(Utils.round_list_elems(recall)))
+    logging.info("F1_score=" + str(Utils.round_list_elems(f1_score)))
+    logging.info("confusion_matrix=\n" + str(confusion_matrix))
