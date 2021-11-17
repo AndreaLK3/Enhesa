@@ -1,4 +1,5 @@
 Word2Vec_vectors/
 *.npy
 *.pickle
-Models/*.csv
+Model/Resources/*.csv
+Model/SavedModels/

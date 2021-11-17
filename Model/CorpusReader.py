@@ -1,9 +1,16 @@
+import os
+import pickle
+from collections import Counter
+
 import Filepaths as F
 import Utils
 import nltk
 import string
 import numpy as np
 import pandas as pd
+
+from Utils import Column, UNK_TOKEN
+
 
 def get_article_indices(article_tokens, vocabulary_ls):
     indices_ls = []
@@ -18,9 +25,9 @@ def get_article_indices(article_tokens, vocabulary_ls):
 # Iterator that gives an article's vocabulary indices and class label
 def next_featuresandlabel_article(corpus_df):
 
-    vocabulary_ls = Utils.get_vocabulary(corpus_df, F.vocabulary_fpath, min_frequency=2, new=False)
+    vocabulary_ls = get_vocabulary(corpus_df, F.vocabulary_fpath, min_frequency=2, new=False)
 
-    article_labels = Utils.get_labels(corpus_df)
+    article_labels = get_labels(corpus_df)
     articles_ls = list(corpus_df[Utils.Column.ARTICLE.value])
 
     for i, article in enumerate(articles_ls):
@@ -61,5 +68,37 @@ def organize_training_corpus(train_corpus_df):
     return (new_training_df, validation_df)
 
 
+# Retrieves the vocabulary, or creates it if not present
+# Source: train.csv. Tokenizer: NLTK's word_tokenize(language='german'). Default: lowercase
+def get_vocabulary(corpus_df, vocab_fpath, min_frequency, new=False, lowercase=True):
+
+    if os.path.exists(vocab_fpath) and not new:
+        with open(vocab_fpath, "rb") as vocab_file:
+            vocabulary_ls = pickle.load(vocab_file)
+    else:
+        articles = corpus_df[Column.ARTICLE.value].to_list()
+        vocabulary_counter = Counter()
+
+        for article in articles:
+            words = nltk.tokenize.word_tokenize(article, language='german')
+            if lowercase:
+                words = [w.lower() for w in words]
+            vocabulary_counter.update(words)
+
+        vocabulary_ls_0 = list(vocabulary_counter.keys())
+        vocabulary_ls = [w for w in vocabulary_ls_0 if vocabulary_counter[w] >= min_frequency]
+        if UNK_TOKEN not in vocabulary_ls:
+            vocabulary_ls.append(UNK_TOKEN)
+        with open(vocab_fpath, "wb") as vocab_file:
+            pickle.dump(vocabulary_ls, vocab_file)
+
+    return vocabulary_ls
 
 
+def get_labels(split_df):
+    class_names = list(split_df["class"].value_counts().index)
+    labels_ls = []
+    for index, row in split_df.iterrows():
+        labels_ls.append(class_names.index(row["class"]))
+
+    return labels_ls

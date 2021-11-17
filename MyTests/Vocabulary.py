@@ -1,3 +1,4 @@
+import Model.CorpusReader
 import Utils
 import Filepaths as F
 import pandas as pd
@@ -22,12 +23,14 @@ class TestVocabulary(unittest.TestCase):
     'prevalent' , 'that', 'use', 'internet', 'connect', 'other', 'people', ':', 'chat', 'der', 'random', 'words', 'unk']
 )
 
-        self.assertEqual(set(Utils.get_vocabulary(self.corpus_df, self.vocab_fpath, new=True, min_frequency=1)),
+        self.assertEqual(set(
+            Model.CorpusReader.get_vocabulary(self.corpus_df, self.vocab_fpath, new=True, min_frequency=1)),
                          self.my_mini_vocab)
 
     def test_min_frequency(self):
-        self.my_mini_vocab_freq2 = set([',', 'the', 'way', '.', 'with', 'to', 'we'])
-        self.assertEqual(set(Utils.get_vocabulary(self.corpus_df, self.vocab_fpath, new=True, min_frequency=2)),
+        self.my_mini_vocab_freq2 = set([',', 'the', 'way', '.', 'with', 'to', 'we', 'unk'])
+        self.assertEqual(set(
+            Model.CorpusReader.get_vocabulary(self.corpus_df, self.vocab_fpath, new=True, min_frequency=2)),
                          self.my_mini_vocab_freq2)
 
 

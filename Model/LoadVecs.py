@@ -1,12 +1,15 @@
 import os
 import re
+
+import Model.CorpusReader
 import Utils
 import Filepaths
 import pandas as pd
 import Filepaths as F
 import numpy as np
 
-
+# If we chose to use the pre-trained Word2Vec word embeddings, we have to retrieve it from the file
+# Word2Vec_vectors/German_Word2Vec_vectors.txt, and assign them to the words of our vocabulary. (Time= about 1 hour)
 def assign_pretrained_embs(vocabulary_words_ls, vecs_fpath):
 
     pretrained_embs_arr = np.random.normal(loc=0.0, scale=0.01, size=(len(vocabulary_words_ls), Utils.EMBEDDINGS_DIM))
@@ -41,11 +44,9 @@ def assign_pretrained_embs(vocabulary_words_ls, vecs_fpath):
 
     return pretrained_embs_arr
 
+# Either compute the randomly initialized ~N(0,0.01) vectors, or assign pre-trained Word2Vec vectors
+def compute_word_vectors(pretrained_or_random, vocab_words_ls):
 
-def compute_word_vectors(pretrained_or_random):
-    corpus_df = Utils.load_split(Utils.Split.TRAIN)
-
-    vocab_words_ls = Utils.get_vocabulary(corpus_df, F.vocabulary_fpath, min_frequency=2, new=False)
     vocab_len = len(vocab_words_ls)
     print("Vocabulary size |V|=" + str(vocab_len))
 
@@ -62,16 +63,18 @@ def compute_word_vectors(pretrained_or_random):
 # Entry level function: if the word embeddings were already computed, load them.
 # Otherwise, compute them (i.e. compute random normal vectors, or assign pretrained vectors).
 def get_word_vectors(pretrained_or_random):
+    corpus_df = Utils.load_split(Utils.Split.TRAIN)
+    vocab_words_ls = Model.CorpusReader.get_vocabulary(corpus_df, F.vocabulary_fpath, min_frequency=2, new=False)
     if pretrained_or_random:
         if os.path.exists(F.pretrained_wordEmb_fpath):
             word_embeddings = np.load(F.pretrained_wordEmb_fpath)
         else:
-            word_embeddings = compute_word_vectors(pretrained_or_random)
+            word_embeddings = compute_word_vectors(pretrained_or_random, vocab_words_ls)
     else:
         if os.path.exists(F.random_wordEmb_fpath):
             word_embeddings = np.load(F.random_wordEmb_fpath)
         else:
-            word_embeddings = compute_word_vectors(pretrained_or_random)
+            word_embeddings = compute_word_vectors(pretrained_or_random, vocab_words_ls)
     return word_embeddings
 
 

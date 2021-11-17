@@ -2,19 +2,18 @@
 # train.csv and test.csv have a stratified split of 10% for testing and the remaining articles for training
 # It is opportune to split another 10% fromm train.csv to get a validation set (or to use N-fold cross-validation)
 
-# - Number of articles per class; bar plot (alternatively one could do a pie graph). How much is the dataset imbalanced?
+# - Number of articles per class; bar plot. How much is the dataset imbalanced?
 # - Average number of words in an article, per class; bar plot.
 # - Color-matrix, expressing the overlap in vocabulary between any 2 classes
 # - How much of the vocabulary of a class is unique, i.e. non-overlapping? bar plot
-import ExploreDataset.GraphicUtils
+import DatasetGraphics.GraphicUtils as GraphicUtils
 import Filepaths
 import Utils
 import matplotlib.pyplot as plt
-from sklearn.feature_extraction.text import CountVectorizer
 import nltk
 import numpy as np
 import os
-import ExploreDataset.GraphicUtils as GraphicUtils
+
 
 # Step 0: load the training dataset from train.csv. Columns: "class", "article" (specified in Utils.Column)
 #         Get the name and the number of articles for each class.
@@ -140,10 +139,10 @@ def all_visualizations():
 
     words_in_articles(training_df)
 
-    vocabularies_ls = ExploreDataset.GraphicUtils.get_class_vocabularies(training_df, class_names)
+    vocabularies_ls = GraphicUtils.get_class_vocabularies(training_df, class_names)
     vocabulary_overlap(class_names, vocabularies_ls)
 
-    vocabulary_unique(class_names, vocabularies_ls)  # that grid... and maybe sorted, too
+    vocabulary_unique(class_names, vocabularies_ls)
 
 
 
