@@ -1,3 +1,5 @@
+import logging
+from math import inf
 import torch
 import pandas as pd
 import Filepaths
@@ -8,31 +10,18 @@ import Models.LoadVecs as LV
 import torch.nn.functional as tfunc
 import Models.CNN as CNN
 import Models.EvaluationMeasures as EV
-import logging
 from datetime import datetime
-
-def log_accuracy_measures(measures_obj):
-
-    accuracy = measures_obj.compute_accuracy()
-    precision = measures_obj.compute_precision()
-    recall = measures_obj.compute_recall()
-    f1_score = measures_obj.compute_f1score()
-    confusion_matrix = measures_obj.compute_confusion_matrix()
-
-    loss = measures_obj.compute_loss()
-
-    logging.info("Loss=" + str(round(loss,2))+ " ; accuracy=" + str(accuracy))
-    logging.info("precision=" + str(precision) + " ; recall=" + str(recall))
-    logging.info("F1_score=" + str(f1_score))
-    logging.info("confusion_matrix=" + str(confusion_matrix))
-
 
 def run_train():
 
+    # initialize log file
     now = datetime.now()
     dt_string = now.strftime("%d_%m-%H_%M")
     Utils.init_logging("Training_" + dt_string + ".log")
 
+    DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    # Are training and validation set already defined? If not, split them from train.csv
     if not os.path.exists(Filepaths.training_set_file):
         train_df = Utils.load_split(Utils.Split.TRAIN)
         training_df, validation_df = CorpusReader.organize_training_corpus(train_df)
@@ -42,43 +31,64 @@ def run_train():
         validation_df = pd.read_csv(Filepaths.validation_set_file,
                                   sep=";", names=[Utils.Column.CLASS.value, Utils.Column.ARTICLE.value])
 
+    # initialize model
     class_names = list(training_df["class"].value_counts().index)
     num_classes = len(class_names)
     word_embeddings = LV.get_word_vectors(False)
     model = CNN.ConvNet(word_embeddings, num_classes)
+    model.to(DEVICE)
     model.train()
 
+    # More initialization: samples' iterator, object to hold the evaluation measures, optimizer
     training_iterator = CorpusReader.next_featuresandlabel_article(training_df)
     measures_obj = EV.EvaluationMeasures()
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
 
-    for article_indices, article_label in training_iterator:
-        # starting operations on one batch
-        optimizer.zero_grad()
+    # Training loop
+    best_validation_loss = inf # for early-stopping
+    max_epochs = 20
+    current_epoch = 1
+    num_training_samples = training_df.index.stop
+    sample_num = 0
 
-        x_indices_t = torch.tensor(article_indices)
-        y_t = torch.tensor(article_label)
-        label_probabilities = model(x_indices_t, y_t)
-        predicted_label = torch.argmax(label_probabilities)
+    while current_epoch < max_epochs:
 
-        # loss and step
-        loss = tfunc.nll_loss(label_probabilities, y_t.unsqueeze(0))
-        loss.backward()
-        optimizer.step()
+        for article_indices, article_label in training_iterator:
+            # starting operations on one batch
+            optimizer.zero_grad()
+            sample_num = sample_num +1
 
-        # stats
-        measures_obj.append_label(predicted_label)
-        measures_obj.append_correct_label(article_label)
-        measures_obj.append_loss(loss)
+            x_indices_t = torch.tensor(article_indices).to(DEVICE)
+            y_t = torch.tensor(article_label).to(DEVICE)
+            label_probabilities = model(x_indices_t, y_t)
+            predicted_label = torch.argmax(label_probabilities)
 
-    # end of epoch: print stats, and reset them
-    log_accuracy_measures(measures_obj)
-    measures_obj.reset_counters()
+            # loss and step
+            loss = tfunc.nll_loss(label_probabilities, y_t.unsqueeze(0))
+            loss.backward()
+            optimizer.step()
 
-    # examine the validation set
-    evaluation(validation_df, model)
+            # stats
+            measures_obj.append_label(predicted_label)
+            measures_obj.append_correct_label(article_label)
+            measures_obj.append_loss(loss)
+
+            if sample_num % (num_training_samples // 10) == 0:
+                logging.info("Training sample: \t " + str(sample_num) + "/ " + str(num_training_samples) + " ...")
+
+        # end of epoch: print stats, and reset them
+        EV.log_accuracy_measures(measures_obj)
+        measures_obj.reset_counters()
+
+        # examine the validation set
+        validation_loss = evaluation(validation_df, model)
+        if validation_loss <= best_validation_loss:
+            best_validation_loss = validation_loss
+        else:
+            break  # early stop
 
 
+# Inference only. Used for the validation set, and possibly any test set
 def evaluation(corpus_df, model):
     model.eval()  # do not train the model now
     samples_iterator = CorpusReader.next_featuresandlabel_article(corpus_df)
@@ -100,7 +110,7 @@ def evaluation(corpus_df, model):
         validation_measures_obj.append_loss(loss)
 
     # end of epoch: print stats
-    log_accuracy_measures(validation_measures_obj)
+    EV.log_accuracy_measures(validation_measures_obj)
 
     model.train()  # training can resume
 

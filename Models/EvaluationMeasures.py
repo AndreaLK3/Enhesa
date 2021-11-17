@@ -1,3 +1,5 @@
+import logging
+
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score, confusion_matrix
 
 class EvaluationMeasures :
@@ -45,3 +47,18 @@ class EvaluationMeasures :
     def compute_confusion_matrix(self):
         return confusion_matrix(self.correct_labels, self.predicted_labels)
 
+
+def log_accuracy_measures(measures_obj):
+
+    accuracy = measures_obj.compute_accuracy()
+    precision = measures_obj.compute_precision()
+    recall = measures_obj.compute_recall()
+    f1_score = measures_obj.compute_f1score()
+    confusion_matrix = measures_obj.compute_confusion_matrix()
+
+    loss = measures_obj.compute_loss()
+
+    logging.info("Loss=" + str(round(loss,2))+ " ; accuracy=" + str(accuracy))
+    logging.info("precision=" + str(precision) + " ; recall=" + str(recall))
+    logging.info("F1_score=" + str(f1_score))
+    logging.info("confusion_matrix=" + str(confusion_matrix))
