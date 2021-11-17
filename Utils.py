@@ -16,7 +16,7 @@ class Column(Enum):
     ARTICLE = "article"
 
 # Constants
-EMBEDDINGS_DIM=300
+EMBEDDINGS_DIM=200
 UNK_TOKEN = 'unk'
 
 # Load train.csv and/or test.csv as Pandas dataframes

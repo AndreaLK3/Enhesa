@@ -19,7 +19,8 @@ vocabulary_fpath = os.path.join(models_folder, resources_subfolder, vocabulary_f
 random_wordEmb_fname = "WordEmbeddings_randomNormal.npy"
 random_wordEmb_fpath = os.path.join(models_folder, resources_subfolder, random_wordEmb_fname)
 pretrained_wordEmb_fname = "WordEmbeddings_pretrained.npy"
-pretrained_wordEmb_fpath = os.path.join(models_folder, resources_subfolder, pretrained_wordEmb_fname)
+# pretrained_wordEmb_fpath = os.path.join(models_folder, resources_subfolder, pretrained_wordEmb_fname)
+# pre-trained Word2Vec embeddings are not in use in the latest version, due to space constraints
 
 training_set_file = os.path.join(models_folder, resources_subfolder, "training.csv")
 validation_set_file = os.path.join(models_folder, resources_subfolder, "validation.csv")

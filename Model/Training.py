@@ -15,7 +15,7 @@ from datetime import datetime
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Setup, training loop + validation
-def run_train(pretrained_or_random_embeddings=False, learning_rate=1e-4):
+def run_train(learning_rate=5e-5):
 
     # initialize log file
     now = datetime.now()
@@ -35,7 +35,7 @@ def run_train(pretrained_or_random_embeddings=False, learning_rate=1e-4):
     # initialize model
     class_names = list(training_df["class"].value_counts().index)
     num_classes = len(class_names)
-    word_embeddings = LV.get_word_vectors(pretrained_or_random_embeddings)
+    word_embeddings = LV.get_word_vectors()
     model = CNN.ConvNet(word_embeddings, num_classes)
     model.to(DEVICE)
     model.train()
@@ -52,13 +52,13 @@ def run_train(pretrained_or_random_embeddings=False, learning_rate=1e-4):
 
     while current_epoch < max_epochs:
         logging.info("Current epoch: " + str(current_epoch))
-        training_iterator = CorpusReader.next_featuresandlabel_article(training_df) #  the samples' iterator
+        training_iterator = CorpusReader.next_featuresandlabel_article(training_df)  # the samples' iterator
         sample_num = 0
 
         for article_indices, article_label in training_iterator:
             # starting operations on one batch
             optimizer.zero_grad()
-            sample_num = sample_num +1
+            sample_num = sample_num + 1
 
             x_indices_t = torch.tensor(article_indices).to(DEVICE)
             y_t = torch.tensor(article_label).to(DEVICE)
@@ -85,16 +85,15 @@ def run_train(pretrained_or_random_embeddings=False, learning_rate=1e-4):
 
         # examine the validation set
         validation_loss = evaluation(validation_df, model)
-        logging.info("validation_loss=" + str(round(validation_loss,3))
-                     + " ; best_validation_loss=" + str(round(best_validation_loss,3)))
+        logging.info("validation_loss=" + str(round(validation_loss, 3))
+                     + " ; best_validation_loss=" + str(round(best_validation_loss, 3)))
         if validation_loss <= best_validation_loss:
             best_validation_loss = validation_loss
         else:
             logging.info("Early stopping")
             break  # early stop
 
-    pretr_vectors_str = "_pretrainedVectors_" if pretrained_or_random_embeddings else ""
-    model_fname = "Model_" + pretr_vectors_str + "lr_" + str(learning_rate) + ".pt"
+    model_fname = "Model_" + "lr_" + str(learning_rate) + ".pt"
     torch.save(model, os.path.join(Filepaths.models_folder, Filepaths.saved_models_subfolder, model_fname))
 
 
