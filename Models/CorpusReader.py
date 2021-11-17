@@ -15,7 +15,7 @@ def get_article_indices(article_tokens, vocabulary_ls):
     return indices_ls
 
 
-def next_featuresandlabel_article(corpus_df, word_embeddings):
+def next_featuresandlabel_article(corpus_df):
 
     vocabulary_ls = Utils.get_vocabulary(corpus_df, F.vocabulary_fpath, min_frequency=2, new=False)
 
@@ -29,8 +29,8 @@ def next_featuresandlabel_article(corpus_df, word_embeddings):
         tokens_ls_nopunct = [tok for tok in tokens_ls_lower
                                      if tok not in '"#$%&\'()*+,-/:;<=>@[\\]^_`{|}~']  # keep the hyphen
         article_indices = get_article_indices(tokens_ls_nopunct, vocabulary_ls)
-        article_embeddings_seq = np.take(word_embeddings, np.array(article_indices), axis=0)
-        yield (article_embeddings_seq, article_labels[i])
+
+        yield (article_indices, article_labels[i])
 
 
 

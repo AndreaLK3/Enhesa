@@ -65,3 +65,14 @@ def get_labels(split_df):
 
     return labels_ls
 
+
+def info_max_words_in_article(corpus_df):
+    articles = corpus_df[Column.ARTICLE.value].to_list()
+
+    max_words = 0
+    for article in articles:
+        words = nltk.tokenize.word_tokenize(article, language='german')
+        num_words = len(words)
+        if num_words > max_words:
+            max_words = num_words
+    return max_words
