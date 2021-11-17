@@ -9,6 +9,7 @@ import torch.nn.functional as tfunc
 import Models.CNN as CNN
 import Models.EvaluationMeasures as EV
 import logging
+from datetime import datetime
 
 def log_accuracy_measures(measures_obj):
 
@@ -27,6 +28,10 @@ def log_accuracy_measures(measures_obj):
 
 
 def run_train():
+
+    now = datetime.now()
+    dt_string = now.strftime("%d_%m-%H_%M")
+    Utils.init_logging("Training_" + dt_string + ".log")
 
     if not os.path.exists(Filepaths.training_set_file):
         train_df = Utils.load_split(Utils.Split.TRAIN)

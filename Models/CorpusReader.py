@@ -34,41 +34,20 @@ def next_featuresandlabel_article(corpus_df):
         yield (article_indices, article_labels[i])
 
 
-# From the original training corpus in train.csv,
-# split off 10% of each class to be the validation set,
+# From the original training corpus in train.csv, split off 10% to be the validation set,
 # and keep the rest in Models/training.csv to be used as the actual training set
 def organize_training_corpus(train_corpus_df):
-    class_frequencies_train = list(train_corpus_df["class"].value_counts())
 
-    # determine how many articles from train.csv will need to be moved in the validation set
-    needed_frequencies_validation = [int(freq/10) for freq in class_frequencies_train]
-
-    class_names = list(train_corpus_df["class"].value_counts().index)
-    num_classes = len(class_names)
-    class_indices_buckets = dict.fromkeys(list(range(num_classes)), set())
-
-    # divide the indices of the rows, by class
-    for index, row in train_corpus_df.iterrows():
-        article_class_idx = class_names.index(row[Utils.Column.CLASS.value])
-        class_indices_buckets[article_class_idx].add(index)
-
-    indices_validation = []
-    indices_training = []
-    # for each class,
-    for c in class_indices_buckets.keys():
-        c_indices = list(class_indices_buckets[c])  # (we have no guarantees on the order, and this is intended)
-        # add a random 10% of the articles of the class, from the original train.csv, to the validation set
-        c_indices_validation = c_indices[0:needed_frequencies_validation[c]]
-        indices_validation = indices_validation + c_indices_validation
-        # the rest goes into the training set proper
-        c_indices_training = c_indices[0:needed_frequencies_validation[c]]
-        indices_training = indices_training + c_indices_training
 
     new_training_rows_ls = []
     validation_rows_ls = []
 
+    num_articles = train_corpus_df.index.stop
+    random_assignment_arr = np.random.rand(num_articles)
+    validation_threshold = 0.9
+
     for index, row in train_corpus_df.iterrows():
-        if index in indices_validation:
+        if random_assignment_arr[index] > validation_threshold:
             validation_rows_ls.append(row)
         else:
             new_training_rows_ls.append(row)
@@ -76,8 +55,8 @@ def organize_training_corpus(train_corpus_df):
     new_training_df = pd.DataFrame(new_training_rows_ls)
     validation_df = pd.DataFrame(validation_rows_ls)
 
-    new_training_df.to_csv(F.training_set_file)
-    validation_df.to_csv(F.validation_set_file)
+    new_training_df.to_csv(F.training_set_file, index=False, sep=";", header=False)
+    validation_df.to_csv(F.validation_set_file, index=False, sep=";", header=False)
 
     return (new_training_df, validation_df)
 
