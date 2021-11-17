@@ -1,4 +1,6 @@
 import os
+
+import Model.CorpusOrganizer
 import Model.CorpusReader
 import Utils
 import Filepaths
@@ -21,7 +23,7 @@ def compute_word_vectors(vocab_words_ls):
 # Otherwise, compute them
 def get_word_vectors():
     corpus_df = Utils.load_split(Utils.Split.TRAIN)
-    vocab_words_ls = Model.CorpusReader.get_vocabulary(corpus_df, F.vocabulary_fpath, min_frequency=2, new=False)
+    vocab_words_ls = Model.CorpusOrganizer.get_vocabulary(corpus_df, F.vocabulary_fpath, min_frequency=2, new=False)
 
     if os.path.exists(F.random_wordEmb_fpath):
         word_embeddings = np.load(F.random_wordEmb_fpath)

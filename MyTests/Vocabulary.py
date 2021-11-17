@@ -1,3 +1,4 @@
+import Model.CorpusOrganizer
 import Model.CorpusReader
 import Utils
 import Filepaths as F
@@ -24,13 +25,13 @@ class TestVocabulary(unittest.TestCase):
 )
 
         self.assertEqual(set(
-            Model.CorpusReader.get_vocabulary(self.corpus_df, self.vocab_fpath, new=True, min_frequency=1)),
+            Model.CorpusOrganizer.get_vocabulary(self.corpus_df, self.vocab_fpath, new=True, min_frequency=1)),
                          self.my_mini_vocab)
 
     def test_min_frequency(self):
         self.my_mini_vocab_freq2 = set([',', 'the', 'way', '.', 'with', 'to', 'we', 'unk'])
         self.assertEqual(set(
-            Model.CorpusReader.get_vocabulary(self.corpus_df, self.vocab_fpath, new=True, min_frequency=2)),
+            Model.CorpusOrganizer.get_vocabulary(self.corpus_df, self.vocab_fpath, new=True, min_frequency=2)),
                          self.my_mini_vocab_freq2)
 
 

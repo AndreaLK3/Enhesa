@@ -5,6 +5,7 @@
 import argparse
 import Model.LoadVecs as LV
 import Model.Training as T
+import Utils
 
 def parse_inference_arguments():
     parser = argparse.ArgumentParser(description='Train a model, if necessary setting up vocabulary and word embeddings beforehand')
@@ -13,6 +14,8 @@ def parse_inference_arguments():
                         help='learning rate for training the model; it is a parameter of the Adam optimizer')
     parser.add_argument('--text', type=str,
                         help="The text of the article that you wish to classify")
+    parser.add_argument('--use_test_set', type=bool, default=False,
+                        help='Instead of performing inference on a sample, run an evaluation of the model on the test set')
 
     args = parser.parse_args()
     return args
@@ -20,6 +23,9 @@ def parse_inference_arguments():
 
 args = parse_inference_arguments()
 
-word_embeddings = LV.get_word_vectors()
-
-model = T.run_train(learning_rate=args.learning_rate)
+if args.use_test_set:  # evaluate the specified model on the test set
+    test_df = Utils.load_split(Utils.Split.TEST)
+    # Utils.init_logging("Test_lr0.0005.log")
+    # T.evaluation(test_df, model)
+else:  # inference on the given sample
+    pass

@@ -1,3 +1,4 @@
+import Model.CorpusOrganizer
 import Model.CorpusReader
 import Utils
 import Filepaths as F
@@ -15,7 +16,7 @@ class TestVectors(unittest.TestCase):
         self.corpus_df = pd.read_csv(F.mytests_file, sep=";",
                                      names=[Utils.Column.CLASS.value, Utils.Column.ARTICLE.value], index_col=False)
         self.vocab_fpath = os.path.join(F.tests_folder, F.vocabulary_fname)
-        self.vocab_words_ls = Model.CorpusReader.get_vocabulary(self.corpus_df, self.vocab_fpath, min_frequency=1, new=True)
+        self.vocab_words_ls = Model.CorpusOrganizer.get_vocabulary(self.corpus_df, self.vocab_fpath, min_frequency=1, new=True)
         self.vectors_fpath = os.path.join(F.tests_folder, F.mytests_vectors_fname)
         self.wordembeddings_fpath = os.path.join(F.tests_folder, F.pretrained_wordEmb_fname)
 

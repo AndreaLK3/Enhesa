@@ -8,6 +8,8 @@
 import argparse
 import Model.LoadVecs as LV
 import Model.Training as T
+import Utils
+
 
 def parse_training_arguments():
     parser = argparse.ArgumentParser(description='Train a model, if necessary setting up vocabulary and word embeddings beforehand')
@@ -23,4 +25,22 @@ args = parse_training_arguments()
 
 word_embeddings = LV.get_word_vectors()
 
-model = T.run_train(learning_rate=args.learning_rate)
+# model = T.run_train(learning_rate=args.learning_rate)
+
+# TEMPORARY
+test_df = Utils.load_split(Utils.Split.TEST)
+model = T.run_train(learning_rate=5e-4)
+Utils.init_logging("Test_lr0.0005.log")
+T.evaluation(test_df, model)
+
+model = T.run_train(learning_rate=1e-4)
+Utils.init_logging("Test_lr0.0001.log")
+T.evaluation(test_df, model)
+
+model = T.run_train(learning_rate=5e-5)
+Utils.init_logging("Test_lr5e-5.log")
+T.evaluation(test_df, model)
+
+model = T.run_train(learning_rate=1e-5)
+Utils.init_logging("Test_lr1e-5.log")
+T.evaluation(test_df, model)

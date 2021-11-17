@@ -4,6 +4,7 @@ import Filepaths as F
 import nltk
 import logging
 import sys
+import torch
 
 # Enums
 class Split(Enum):
@@ -58,3 +59,9 @@ def info_max_words_in_article(corpus_df):
         if num_words > max_words:
             max_words = num_words
     return max_words
+
+
+def load_model(lr):
+    model_name = ""
+    model = torch.load("")
+    return model

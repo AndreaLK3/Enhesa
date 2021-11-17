@@ -3,6 +3,7 @@ from math import inf
 import torch
 import pandas as pd
 import Filepaths
+import Model.CorpusOrganizer
 import Model.CorpusReader as CorpusReader
 import Utils
 import os
@@ -18,14 +19,14 @@ DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 def run_train(learning_rate=5e-5):
 
     # initialize log file
-    now = datetime.now()
-    dt_string = now.strftime("%d_-%m_%H_%M")
-    Utils.init_logging("Training_" + dt_string + ".log")
+    # now = datetime.now()
+    # dt_string = now.strftime("%d%m-%H%M")
+    Utils.init_logging("Training_" + "lr" + str(learning_rate) + ".log")  # + "dt" + dt_string
 
     # Are training and validation set already defined? If not, split them from train.csv
     if not os.path.exists(Filepaths.training_set_file):
         train_df = Utils.load_split(Utils.Split.TRAIN)
-        training_df, validation_df = CorpusReader.organize_training_corpus(train_df)
+        training_df, validation_df = Model.CorpusOrganizer.organize_training_corpus(train_df)
     else:
         training_df = pd.read_csv(Filepaths.training_set_file,
                                   sep=";", names=[Utils.Column.CLASS.value, Utils.Column.ARTICLE.value])
@@ -46,12 +47,12 @@ def run_train(learning_rate=5e-5):
 
     # Training loop
     best_validation_loss = inf  # for early-stopping
-    max_epochs = 30
+    max_epochs = 40
     current_epoch = 1
     num_training_samples = training_df.index.stop
 
-    while current_epoch < max_epochs:
-        logging.info("Current epoch: " + str(current_epoch))
+    while current_epoch <= max_epochs:
+        logging.info(" ****** Current epoch: " + str(current_epoch) + " ****** ")
         training_iterator = CorpusReader.next_featuresandlabel_article(training_df)  # the samples' iterator
         sample_num = 0
 
@@ -93,8 +94,9 @@ def run_train(learning_rate=5e-5):
             logging.info("Early stopping")
             break  # early stop
 
-    model_fname = "Model_" + "lr_" + str(learning_rate) + ".pt"
+    model_fname = "Model_" + "lr" + str(learning_rate) + ".pt"
     torch.save(model, os.path.join(Filepaths.models_folder, Filepaths.saved_models_subfolder, model_fname))
+    return model
 
 
 # Inference only. Used for the validation set, and possibly any test set
