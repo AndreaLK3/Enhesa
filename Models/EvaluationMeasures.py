@@ -1,4 +1,4 @@
-from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
+from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score, confusion_matrix
 
 class EvaluationMeasures :
     # ---------- Initialization ---------- #
@@ -41,4 +41,7 @@ class EvaluationMeasures :
 
     def compute_loss(self):
         return self.total_loss / self.number_of_steps
+
+    def compute_confusion_matrix(self):
+        return confusion_matrix(self.correct_labels, self.predicted_labels)
 

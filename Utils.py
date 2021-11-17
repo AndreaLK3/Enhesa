@@ -25,7 +25,7 @@ UNK_TOKEN = 'unk'
 # Load train.csv and/or test.csv as Pandas dataframes
 def load_split(split_enum):
     if split_enum == Split.TRAIN:
-        df = pd.read_csv(F.training_file, sep=";", names=[Column.CLASS.value, Column.ARTICLE.value])
+        df = pd.read_csv(F.train_file, sep=";", names=[Column.CLASS.value, Column.ARTICLE.value])
     elif split_enum == Split.VALIDATION:
         df = None
     elif split_enum == Split.TEST:
