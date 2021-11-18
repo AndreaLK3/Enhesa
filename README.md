@@ -37,7 +37,7 @@ The classifier is based on a Convolutional Neural Network. <br/>
 - Word embeddings of shape (vocabulary_size, 200) are randomly initialized following a normal distribution N(0,0.01). <br/>
 - Having gathered the word embeddings of the article text in a matrix, 2 convolution operations are applied in parallel,
   with kernels of size 3 and 6. The dimensionality is brought from 200 to 100.
-- Global max-pooling is applied, obtaining 1 vector of features from a text of arbitrary length
+- Global max-pooling is applied, obtaining a vector of features from a text of arbitrary length
 - The 2 feature vectors coming from (kernels + max-pooling) are concatenated, and constitute the 
 input of a Linear FF-NN layer. Finally, softmax is applied for classification
   
