@@ -16,9 +16,9 @@ def parse_inference_arguments():
     parser = argparse.ArgumentParser(description='Load a model and either run inference on a provided sample '
                                                  'or evaluate it on the test set')
 
-    parser.add_argument('--learning_rate', type=float, default=5e-4,
+    parser.add_argument('--learning_rate', type=float, default=1e-4,
                         help='learning rate used in the model we wish to load')
-    parser.add_argument('--text', type=str,
+    parser.add_argument('--text', type=str, default="example article",
                         help="The text of the article that you wish to classify")
     parser.add_argument('--use_test_set', type=bool, default=False,
                         help='Instead of performing inference on a sample, run an evaluation of the model on the test set')

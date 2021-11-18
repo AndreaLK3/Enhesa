@@ -25,10 +25,4 @@ if __name__ == "__main__":
 
     word_embeddings = LV.get_word_vectors()
 
-    # model = T.run_train(learning_rate=args.learning_rate)
-
-    # TEMPORARY
-    test_df = Utils.load_split(Utils.Split.TEST)
-    model = T.run_train(learning_rate=5e-5)
-    Utils.init_logging("Test_lr5e-5.log")
-    T.evaluation(test_df, model)
+    model = T.run_train(learning_rate=args.learning_rate)

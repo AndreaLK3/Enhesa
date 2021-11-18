@@ -6,13 +6,13 @@
 # - Average number of words in an article, per class; bar plot.
 # - Color-matrix, expressing the overlap in vocabulary between any 2 classes
 # - How much of the vocabulary of a class is unique, i.e. non-overlapping? bar plot
-import DatasetGraphics.GraphicUtils as GraphicUtils
 import Filepaths
 import Utils
 import matplotlib.pyplot as plt
 import nltk
 import numpy as np
 import os
+import DatasetGraphics.GraphicUtils as GraphicUtils
 
 
 # Step 0: load the training dataset from train.csv. Columns: "class", "article" (specified in Utils.Column)
@@ -35,15 +35,15 @@ def initialize():
 # Useful to be aware of how much the dataset is imbalanced
 def num_articles(class_frequencies_training, class_names):
 
-    fig, ax = plt.subplots()
+    fig = plt.figure(1)
     bar_obj = plt.bar(x=class_names, height=class_frequencies_training, width=0.6, color="b")
-    # plt.bar(x=class_names, height=class_frequencies_test, bottom=class_frequencies_training, width=0.6, color="g")
+
     plt.xticks(rotation=45)
     plt.xlabel('Class')
     plt.ylabel('Number of articles')
     plt.title("Articles per class (training set)")
     plt.bar_label(bar_obj, labels=class_frequencies_training)
-    # plt.legend(["Training set", "Test set"])
+
     GraphicUtils.save_figure(fig, os.path.join(Filepaths.images_folder, 'Number_of_articles.png'))
 
 
@@ -51,7 +51,7 @@ def num_articles(class_frequencies_training, class_names):
 # Meant to explore how some classes may be more "verbose" than others
 def words_in_articles(training_df):
 
-    fig, ax = plt.subplots()
+    fig = plt.figure(2)
     class_names = list(training_df["class"].value_counts().index)
     avg_words_per_class = []
 
@@ -68,10 +68,8 @@ def words_in_articles(training_df):
     plt.title("Average words per article (training set)")
     plt.bar_label(bar_obj, labels=avg_words_per_class)
     # plt.legend(["Training set", "Test set"])
+
     GraphicUtils.save_figure(fig, os.path.join(Filepaths.images_folder, 'Avg_words_in_class.png'))
-
-
-
 
 
 # Visualization 3: The vocabularies of a class may overlap with that of another class. To which extent?
@@ -103,13 +101,14 @@ def vocabulary_overlap(class_names, vocabularies_ls):
 
     plt.imshow(overlap_matrix, cmap=GraphicUtils.create_gyr_colormap())
     plt.colorbar()
-    plt.title("Overlap in vocabulary between classes")
+    plt.title("Vocabulary overlap between classes")
+    plt.show()
     GraphicUtils.save_figure(fig, os.path.join(Filepaths.images_folder, 'Vocabulary_overlap.png'))
 
 
 def vocabulary_unique(class_names, vocabularies_ls):
 
-    fig, ax = plt.subplots()
+    fig = plt.figure(4)
     num_classes = len(class_names)
     unique_vocabulary_fraction_ls = []
     for i in range(num_classes):
@@ -129,6 +128,7 @@ def vocabulary_unique(class_names, vocabularies_ls):
     # plt.grid(color='lightgray', linestyle='-', linewidth=0.2, zorder=-1)
     plt.bar_label(bar_obj, labels=unique_vocabulary_fraction_ls, zorder=5)
     # plt.legend(["Training set", "Test set"])
+    plt.show()
     GraphicUtils.save_figure(fig, os.path.join(Filepaths.images_folder, 'Vocabulary_unique.png'))
 
 
@@ -143,7 +143,5 @@ def all_visualizations():
     vocabulary_overlap(class_names, vocabularies_ls)
 
     vocabulary_unique(class_names, vocabularies_ls)
-
-
-
+    plt.show()
 
