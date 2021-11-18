@@ -66,7 +66,7 @@ def log_accuracy_measures(measures_obj):
     loss = measures_obj.compute_loss()
     confusion_matrix = measures_obj.compute_confusion_matrix()
 
-    logging.info("Loss=" + str(round(loss,2))+ " ; accuracy=" + str(round(accuracy,3)))
+    logging.info("NLL loss=" + str(round(loss,2))+ " ; accuracy=" + str(round(accuracy,3)))
     logging.info("precision=" + str(Utils.round_list_elems(precision)) + "\nRecall=" + str(Utils.round_list_elems(recall)))
     logging.info("F1_score=" + str(Utils.round_list_elems(f1_score)))
     logging.info("confusion_matrix=\n" + str(confusion_matrix))

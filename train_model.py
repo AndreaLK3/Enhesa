@@ -14,7 +14,7 @@ import Utils
 def parse_training_arguments():
     parser = argparse.ArgumentParser(description='Train a model, if necessary setting up vocabulary and word embeddings beforehand')
 
-    parser.add_argument('--learning_rate', type=float, default=5e-5,
+    parser.add_argument('--learning_rate', type=float, default=5e-4,
                         help='learning rate for training the model; it is a parameter of the Adam optimizer')
 
     args = parser.parse_args()
@@ -35,12 +35,4 @@ T.evaluation(test_df, model)
 
 model = T.run_train(learning_rate=1e-4)
 Utils.init_logging("Test_lr0.0001.log")
-T.evaluation(test_df, model)
-
-model = T.run_train(learning_rate=5e-5)
-Utils.init_logging("Test_lr5e-5.log")
-T.evaluation(test_df, model)
-
-model = T.run_train(learning_rate=1e-5)
-Utils.init_logging("Test_lr1e-5.log")
 T.evaluation(test_df, model)

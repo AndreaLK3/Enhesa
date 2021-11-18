@@ -35,14 +35,15 @@ def run_train(learning_rate=5e-5):
 
     # initialize model
     class_names = list(training_df["class"].value_counts().index)
+    class_names.sort()
+    logging.info("class_names = " + str(class_names))
     num_classes = len(class_names)
     word_embeddings = LV.get_word_vectors()
     model = CNN.ConvNet(word_embeddings, num_classes)
     model.to(DEVICE)
     model.train()
 
-    # More initialization: object to hold the evaluation measures, optimizer
-    measures_obj = EV.EvaluationMeasures()
+    # measures_obj = EV.EvaluationMeasures()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # Training loop
@@ -72,16 +73,16 @@ def run_train(learning_rate=5e-5):
             optimizer.step()
 
             # stats
-            measures_obj.append_label(y_predicted.item())
-            measures_obj.append_correct_label(article_label)
-            measures_obj.append_loss(loss.item())
+            # measures_obj.append_label(y_predicted.item())
+            # measures_obj.append_correct_label(article_label)
+            # measures_obj.append_loss(loss.item())
 
             if sample_num % (num_training_samples // 5) == 0:
                 logging.info("Training sample: \t " + str(sample_num) + "/ " + str(num_training_samples) + " ...")
 
         # end of epoch: print stats, and reset them
-        EV.log_accuracy_measures(measures_obj)
-        measures_obj.reset_counters()
+        # EV.log_accuracy_measures(measures_obj)
+        # measures_obj.reset_counters()
         current_epoch = current_epoch + 1
 
         # examine the validation set

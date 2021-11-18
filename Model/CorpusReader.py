@@ -36,6 +36,7 @@ def next_featuresandlabel_article(corpus_df):
 
 def get_labels(split_df):
     class_names = list(split_df["class"].value_counts().index)
+    class_names.sort()
     labels_ls = []
     for index, row in split_df.iterrows():
         labels_ls.append(class_names.index(row["class"]))

@@ -19,6 +19,7 @@ class Column(Enum):
 # Constants
 EMBEDDINGS_DIM=200
 UNK_TOKEN = 'unk'
+CLASS_NAMES = []  # sorted list of class names, in case we can not retrieve it from a dataset
 
 # Load train.csv and/or test.csv as Pandas dataframes
 def load_split(split_enum):

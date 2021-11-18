@@ -30,7 +30,6 @@ class ConvNet(torch.nn.Module):
         features_k3 = tfunc.max_pool1d(conv1_k3, kernel_size=conv1_k3.shape[2])  # (1,100,1)
         features_k6 = tfunc.max_pool1d(conv1_k6, kernel_size=conv1_k6.shape[2])  # (1,100,1)
 
-
         doc_rep = torch.cat([features_k3,features_k6], dim=1).squeeze(2)  # (1,300)
 
         logits_classes = self.linear2classes(doc_rep)
