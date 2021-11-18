@@ -2,7 +2,6 @@
 # If such a model is not present, it throws error. It should be trained first.
 # Use the model for inference, given a span of text.
 import Filepaths
-import Filepaths as F
 import argparse
 import os
 import Utils
@@ -27,26 +26,10 @@ def parse_inference_arguments():
     args = parser.parse_args()
     return args
 
-def load_model(lr):
-    model_fname = "Model_" + "lr" + str(lr) + ".pt"
-    saved_model_fpath = os.path.join(F.models_folder, F.saved_models_subfolder, model_fname)
-    model = torch.load(saved_model_fpath)
-    return model
+def run_inference_on_text(text, lr=1e-4):
+    class_names = Utils.CLASS_NAMES
 
-args = parse_inference_arguments()
-test_df = Utils.load_split(Utils.Split.TEST)  # TEMP
-if args.use_test_set:  # evaluate the specified model on the test set
-    Utils.init_logging("Test_lr" + str(args.learning_rate) + ".log")
-    test_df = Utils.load_split(Utils.Split.TEST)
-    model = load_model(args.learning_rate)
-    T.evaluation(test_df, model)
-else:  # inference on the given sample
-    class_names = list(test_df["class"].value_counts().index)
-    # class_names.sort()
-    print(class_names)
-
-    model = load_model(args.learning_rate)
-    text = args.text
+    model = Utils.load_model(lr)
 
     # tokenize the text
     tokens_ls_0 = nltk.tokenize.word_tokenize(text, language='german')
@@ -57,7 +40,7 @@ else:  # inference on the given sample
     # get the vocabulary
     vocab_fpath = Filepaths.vocabulary_fpath
     with open(vocab_fpath, "rb") as vocab_file:
-            vocabulary_ls = pickle.load(vocab_file)
+        vocabulary_ls = pickle.load(vocab_file)
 
     # get the indices for the text
     article_indices = CR.get_article_indices(tokens_ls_nopunct, vocabulary_ls)
@@ -67,4 +50,19 @@ else:  # inference on the given sample
     label_probabilities = model(x_indices_t)
     y_predicted = torch.argmax(label_probabilities)
 
-    print("Predicted class = " + str(class_names[y_predicted]))
+    return class_names[y_predicted]
+
+
+
+
+if __name__ == "__main__":
+    args = parse_inference_arguments()
+    test_df = Utils.load_split(Utils.Split.TEST)  # TEMP
+    if args.use_test_set:  # evaluate the specified model on the test set
+        Utils.init_logging("Test_lr" + str(args.learning_rate) + ".log")
+        test_df = Utils.load_split(Utils.Split.TEST)
+        model = Utils.load_model(args.learning_rate)
+        T.evaluation(test_df, model)
+    else:  # inference on the given sample
+        text_str = args.args.text
+        print(run_inference_on_text(text_str))

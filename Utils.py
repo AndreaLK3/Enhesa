@@ -5,6 +5,7 @@ import nltk
 import logging
 import sys
 import torch
+import os
 
 # Enums
 class Split(Enum):
@@ -19,7 +20,8 @@ class Column(Enum):
 # Constants
 EMBEDDINGS_DIM=200
 UNK_TOKEN = 'unk'
-CLASS_NAMES = []  # sorted list of class names, in case we can not retrieve it from a dataset
+CLASS_NAMES = ['Etat', 'Inland', 'International', 'Kultur', 'Panorama', 'Sport', 'Web', 'Wirtschaft', 'Wissenschaft']
+              # sorted list of class names, in case we can not retrieve it from a dataset
 
 # Load train.csv and/or test.csv as Pandas dataframes
 def load_split(split_enum):
@@ -63,6 +65,7 @@ def info_max_words_in_article(corpus_df):
 
 
 def load_model(lr):
-    model_name = ""
-    model = torch.load("")
+    model_fname = "Model_" + "lr" + str(lr) + ".pt"
+    saved_model_fpath = os.path.join(F.models_folder, F.saved_models_subfolder, model_fname)
+    model = torch.load(saved_model_fpath)
     return model

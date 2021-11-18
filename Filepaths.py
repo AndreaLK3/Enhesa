@@ -12,6 +12,7 @@ vectors_fname = "German_Word2Vec_vectors.txt"
 models_folder = "Model"
 saved_models_subfolder = "SavedModels"
 resources_subfolder = "Resources"
+measures_to_display_subfolder = "Measures to display"
 
 vocabulary_fname = "vocabularyList.pickle"
 vocabulary_fpath = os.path.join(models_folder, resources_subfolder, vocabulary_fname)
