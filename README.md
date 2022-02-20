@@ -1,4 +1,4 @@
-# Enhesa Technical Assignment
+# Technical Assignment
 
 ## Tasks
 
